@@ -25,8 +25,7 @@ class Schedule:
         if s.check() == sat:
             self.m = s.model()
 
-            self.fill_blocks()
-            self.fill_teams()
+            self.fill_slots_teams()
 
             return True
         else:
@@ -41,15 +40,13 @@ class Schedule:
                         var2 = slot2.team_var
                         s.add(Implies(And(var1 >= 0, var2 >= 0), var1 != var2))
 
-    def fill_blocks(self):
-        for block in self.blocks.values():
-            block.fill(self.m)
-
-    def fill_teams(self):
+    def fill_slots_teams(self):
         for block in self.blocks.values():
             for slot in block.slots:
-                team = self.teams[self.m[slot.team_var].as_long()]
+                team_i = self.m[slot.team_var].as_long()
+                if team_i >= 0:
+                    team = self.teams[team_i]
 
-                team.slots[block.name] = slot
-                slot.team = team
+                    team.slots[block.name] = slot
+                    slot.team = team
 

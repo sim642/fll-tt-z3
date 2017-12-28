@@ -69,17 +69,13 @@ class Block:
             print()
         print()
 
-    def fill(self, m):
-        for slot in self.slots:
-            slot.fill(m)
-
     def dump_csv(self, filename):
         with open(filename, "w", newline="") as file:
             writer = csv.writer(file)
             writer.writerow(["start_time"] + self.columns)
 
             for row in self.grid_slots:
-                writer.writerow([row[0].start_time] + [slot.team.name for slot in row])
+                writer.writerow([row[0].start_time] + [slot.team.name if slot.team else "" for slot in row])
 
     @staticmethod
     def dump_blocks_csv(blocks, dirname):
@@ -119,6 +115,3 @@ class Slot:
 
     def conflicts(self, other):
         return self.during(other.start_time) or other.during(self.start_time)
-
-    def fill(self, m):
-        self.team = m[self.team_var]
