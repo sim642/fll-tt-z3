@@ -1,7 +1,9 @@
-import math
-import isodate
+import csv
 import json
+
+import isodate
 from z3 import *
+
 
 class Block:
 
@@ -13,13 +15,14 @@ class Block:
         self.row_time = row_time
         self.cleanup_time = cleanup_time
 
-        self.teams = None
+        self.num_teams = None
         self.rows = None
+        self.grid_slots = None
         self.slots = None
 
-    def init_teams(self, teams):
-        self.teams = teams
-        self.rows = math.ceil(teams / self.columns)
+    def init_teams(self, num_teams):
+        self.num_teams = num_teams
+        self.rows = math.ceil(num_teams / self.columns)
         self.grid_slots = [[Slot(self, row, column) for column in range(self.columns)] for row in range(self.rows)]
         self.slots = [slot for row in self.grid_slots for slot in row]
 
@@ -34,14 +37,21 @@ class Block:
             cleanup_time=isodate.parse_duration(j["cleanup_time"]),
         )
 
+    @staticmethod
+    def load_blocks_json(filename):
+        with open(filename) as file:
+            j = json.load(file)
+
+            return {name: Block.from_json(name, block_j) for name, block_j in j.items()}
+
     @property
-    def fake_teams(self):
-        return len(self.slots) - self.teams
+    def num_fake_teams(self):
+        return len(self.slots) - self.num_teams
 
     def constraints(self, s):
         team_vars = [slot.team_var for slot in self.slots]
         for team_var in team_vars:
-            s.add(And(-self.fake_teams <= team_var, team_var < self.teams))
+            s.add(And(-self.num_fake_teams <= team_var, team_var < self.num_teams))
 
         s.add(Distinct(*team_vars))
 
@@ -53,6 +63,25 @@ class Block:
             print()
         print()
 
+    def fill(self, m):
+        for slot in self.slots:
+            slot.fill(m)
+
+    def dump_csv(self, filename):
+        with open(filename, "w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["start_time"] + [str(column) for column in range(self.columns)])
+
+            for row in self.grid_slots:
+                writer.writerow([row[0].start_time] + [slot.team.name for slot in row])
+
+    @staticmethod
+    def dump_blocks_csv(blocks, dirname):
+        for block in blocks.values():
+            filename = dirname + "/" + block.name + ".csv" # TODO: path concatenation
+            block.dump_csv(filename)
+
+
 class Slot:
 
     def __init__(self, block, row, column):
@@ -61,6 +90,7 @@ class Slot:
         self.column = column
 
         self.team_var = Int("{}_{}_{}".format(block.name, row, column).encode("utf-8"))
+        self.team = None
 
     @property
     def start_time(self):
@@ -80,9 +110,5 @@ class Slot:
     def conflicts(self, other):
         return self.during(other.start_time) or other.during(self.start_time)
 
-
-def load_blocks(filename):
-    with open(filename) as file:
-        j = json.load(file)
-
-        return {name: Block.from_json(name, block_j) for name, block_j in j.items()}
+    def fill(self, m):
+        self.team = m[self.team_var]
