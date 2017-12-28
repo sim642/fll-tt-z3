@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import csv
 import json
 
@@ -40,9 +41,9 @@ class Block:
     @staticmethod
     def load_blocks_json(filename):
         with open(filename) as file:
-            j = json.load(file)
+            j = json.load(file, object_pairs_hook=OrderedDict)
 
-            return {name: Block.from_json(name, block_j) for name, block_j in j.items()}
+            return OrderedDict((name, Block.from_json(name, block_j)) for name, block_j in j.items())
 
     @property
     def num_fake_teams(self):
