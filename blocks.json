@@ -8,7 +8,7 @@
   },
 
   "Roboti disain": {
-    "columns": 2,
+    "columns": ["A", "C"],
     "start_time": "2016-01-23T11:00",
     "setup_time": "PT5M",
     "row_time": "PT10M",
@@ -24,7 +24,7 @@
   },
 
   "Robotimängu 1. voor": {
-    "columns": 4,
+    "columns": ["A", "B", "C", "D"],
     "start_time": "2016-01-23T12:45",
     "setup_time": "PT5M",
     "row_time": "PT5M",
@@ -32,7 +32,7 @@
   },
 
   "Robotimängu 2. voor": {
-    "columns": 4,
+    "columns": ["A", "B", "C", "D"],
     "start_time": "2016-01-23T13:45",
     "setup_time": "PT5M",
     "row_time": "PT5M",
@@ -40,7 +40,7 @@
   },
 
   "Robotimängu 3. voor": {
-    "columns": 4,
+    "columns": ["A", "B", "C", "D"],
     "start_time": "2016-01-23T14:45",
     "setup_time": "PT5M",
     "row_time": "PT5M",

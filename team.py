@@ -31,5 +31,5 @@ class Team:
 
             for team in teams:
                 d = {"team": team.name}
-                d.update({name: slot.start_time for name, slot in team.slots.items()})
+                d.update({name: "{} ({})".format(slot.start_time, slot.column) for name, slot in team.slots.items()})
                 writer.writerow(d)

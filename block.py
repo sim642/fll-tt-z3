@@ -1,6 +1,6 @@
-from collections import OrderedDict
 import csv
 import json
+from collections import OrderedDict
 
 import isodate
 from z3 import *
@@ -11,27 +11,32 @@ class Block:
     def __init__(self, name, columns, start_time, setup_time, row_time, cleanup_time):
         self.name = name
         self.columns = columns
+        self.num_columns = len(columns)
         self.start_time = start_time
         self.setup_time = setup_time
         self.row_time = row_time
         self.cleanup_time = cleanup_time
 
         self.num_teams = None
-        self.rows = None
+        self.num_rows = None
         self.grid_slots = None
         self.slots = None
 
     def init_teams(self, num_teams):
         self.num_teams = num_teams
-        self.rows = math.ceil(num_teams / self.columns)
-        self.grid_slots = [[Slot(self, row, column) for column in range(self.columns)] for row in range(self.rows)]
+        self.num_rows = math.ceil(num_teams / self.num_columns)
+        self.grid_slots = [[Slot(self, row, col) for col in range(self.num_columns)] for row in range(self.num_rows)]
         self.slots = [slot for row in self.grid_slots for slot in row]
 
     @staticmethod
     def from_json(name, j):
+        columns = j["columns"]
+        if isinstance(columns, int):
+            columns = [str(i) for i in range(columns)]
+
         return Block(
             name=name,
-            columns=j["columns"],
+            columns=columns,
             start_time=isodate.parse_datetime(j["start_time"]),
             setup_time=isodate.parse_duration(j["setup_time"]),
             row_time=isodate.parse_duration(j["row_time"]),
@@ -71,7 +76,7 @@ class Block:
     def dump_csv(self, filename):
         with open(filename, "w", newline="") as file:
             writer = csv.writer(file)
-            writer.writerow(["start_time"] + [str(column) for column in range(self.columns)])
+            writer.writerow(["start_time"] + self.columns)
 
             for row in self.grid_slots:
                 writer.writerow([row[0].start_time] + [slot.team.name for slot in row])
@@ -85,13 +90,17 @@ class Block:
 
 class Slot:
 
-    def __init__(self, block, row, column):
+    def __init__(self, block, row, col):
         self.block = block
         self.row = row
-        self.column = column
+        self.col = col
 
-        self.team_var = Int("{}_{}_{}".format(block.name, row, column).encode("utf-8"))
+        self.team_var = Int("{}_{}_{}".format(block.name, row, col).encode("utf-8"))
         self.team = None
+
+    @property
+    def column(self):
+        return self.block.columns[self.col]
 
     @property
     def start_time(self):
