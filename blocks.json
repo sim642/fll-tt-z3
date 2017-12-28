@@ -1,0 +1,49 @@
+{
+  "Robotimängu harjutus": {
+    "columns": 2,
+    "start_time": "2016-01-23T11:00",
+    "setup_time": "PT5M",
+    "row_time": "PT20M",
+    "cleanup_time": "PT0M"
+  },
+
+  "Roboti disain": {
+    "columns": 2,
+    "start_time": "2016-01-23T11:00",
+    "setup_time": "PT5M",
+    "row_time": "PT10M",
+    "cleanup_time": "PT5M"
+  },
+
+  "Projekt ja põhiväärtused": {
+    "columns": 2,
+    "start_time": "2016-01-23T11:00",
+    "setup_time": "PT10M",
+    "row_time": "PT20M",
+    "cleanup_time": "PT5M"
+  },
+
+  "Robotimängu 1. voor": {
+    "columns": 4,
+    "start_time": "2016-01-23T12:45",
+    "setup_time": "PT5M",
+    "row_time": "PT5M",
+    "cleanup_time": "PT5M"
+  },
+
+  "Robotimängu 2. voor": {
+    "columns": 4,
+    "start_time": "2016-01-23T13:45",
+    "setup_time": "PT5M",
+    "row_time": "PT5M",
+    "cleanup_time": "PT5M"
+  },
+
+  "Robotimängu 3. voor": {
+    "columns": 4,
+    "start_time": "2016-01-23T14:45",
+    "setup_time": "PT5M",
+    "row_time": "PT5M",
+    "cleanup_time": "PT5M"
+  }
+}
