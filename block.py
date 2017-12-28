@@ -34,10 +34,14 @@ class Block:
             cleanup_time=isodate.parse_duration(j["cleanup_time"]),
         )
 
+    @property
+    def fake_teams(self):
+        return len(self.slots) - self.teams
+
     def constraints(self, s):
         team_vars = [slot.team_var for slot in self.slots]
         for team_var in team_vars:
-            s.add(And(0 <= team_var, team_var < self.teams))
+            s.add(And(-self.fake_teams <= team_var, team_var < self.teams))
 
         s.add(Distinct(*team_vars))
 

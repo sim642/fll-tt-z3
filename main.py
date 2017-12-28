@@ -21,7 +21,9 @@ for block1, block2 in itertools.combinations(blocks.values(), 2):
     for slot1 in block1.slots:
         for slot2 in block2.slots:
             if slot1.conflicts(slot2):
-                s.add(slot1.team_var != slot2.team_var)
+                var1 = slot1.team_var
+                var2 = slot2.team_var
+                s.add(Implies(And(var1 >= 0, var2 >= 0), var1 != var2))
 
 print(s.check())
 m = s.model()
